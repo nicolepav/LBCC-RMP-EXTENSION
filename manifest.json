@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "LBCC RateMyProfessors",
+    "name": "[DEMO]LBCC RateMyProfessors",
     "version": "0.1",
 
     "description": "Gets information from RateMyProfessor on LBCC teachers.",
@@ -29,14 +29,7 @@
             "matches": [
             "<all_urls>"
             ],
-            "js": ["content.js", "lbcc.js"]
+            "js": ["displayscript.js"]
         }
-        ],
-
-    "background": {
-        "scripts": ["background.js"]
-        }
-        
+        ]
 }
-
-
