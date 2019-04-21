@@ -1,0 +1,42 @@
+{
+    "manifest_version": 2,
+    "name": "LBCC RateMyProfessors",
+    "version": "0.1",
+
+    "description": "Gets information from RateMyProfessor on LBCC teachers.",
+    "author": "Nicole Pavlovich, Ruben Bramasco, & Blair Cardiel",
+
+    "browser_action": 
+        {
+        "default_icon": 
+        {
+            "48": "LBCC_RMP_48.png",
+            "128": "LBCC_RMP_128.png"
+        },
+        "default_popup": "popup.html",
+        "default_title": "Click here!"
+        },
+    
+        "icons": 
+        {
+            "48": "LBCC_RMP_48.png",
+            "128": "LBCC_RMP_128.png"
+        },
+        
+    "content_scripts": 
+        [
+        {
+            "matches": [
+            "<all_urls>"
+            ],
+            "js": ["content.js", "lbcc.js"]
+        }
+        ],
+
+    "background": {
+        "scripts": ["background.js"]
+        }
+        
+}
+
+
