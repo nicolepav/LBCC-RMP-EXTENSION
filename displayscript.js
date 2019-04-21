@@ -1,12 +1,36 @@
 // example object
 const data = {
-    name: 'Prof. Examples',
+    name: 'Professor RealGood',
     quality: 5.0,
     difficulty: 3.3,
 };
 
+const data2 = {
+    name: 'Professor HeckNoWay',
+    quality: 1.0,
+    difficulty: 4.3,
+};
+
+const data3 = {
+    name: 'Professor Mediocre',
+    quality: 3.0,
+    difficulty: 3.0
+}
+
+const data4 = {
+    name: 'Professor KindaAverage',
+    quality: 3.4,
+    difficulty: 2.7
+}
+
+const data5 = {
+    name: 'Professor Likeable',
+    quality: 3.7,
+    difficulty: 0.2
+}
+
 // array of objects that is fed to the 
-const arr = [data, data, data, data, data, data, data, data];
+const arr = [data, data2, data3, data4, data5];
 
 // create a professor block for each item in the array
 for (i = 0; i < arr.length; i++) 
@@ -19,7 +43,7 @@ for (i = 0; i < arr.length; i++)
 
         // create professor name as content for the prof box
         let str = '';
-        str += arr[i].name + '\n'; 
+        str += arr[i].name + '\n\n'; 
         professorbox.innerHTML = str; //put nothing here, inner HTML will be more divs?
 
     // create another div element (inner container for quality score)
@@ -40,10 +64,12 @@ for (i = 0; i < arr.length; i++)
         dstr += 'D: ' + arr[i].difficulty.toFixed(1);
         dBox.innerHTML = dstr;
     
-    // nest the quality box & difficulty box inside the professor box
-    professorbox.append(qBox);
-    professorbox.append(dBox); 
 
     // append the professor box to the html file
     document.getElementById('proflist').append(professorbox);
+
+        // nest the quality box & difficulty box inside the professor box
+        professorbox.append(qBox);
+        professorbox.append(dBox); 
+    
 } 
