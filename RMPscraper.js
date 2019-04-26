@@ -1,8 +1,18 @@
-var request = require("request")
-var cheerio = require("cheerio")
+const pup = require("puppeteer")
+const cheerio = require("cheerio")
 
-request('https://stackoverflow.com/questions/34709765/cheerio-how-to-select-element-by-text-content',function(err,res,html){
-    var x = cheerio.load(html)
-    //console.log(x.html())
-    console.log(x(this).text())
-});
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://www.ratemyprofessors.com/');
+  
+  await page.click('a[id=findProfessorOption]')
+
+  await page.$eval('input[name=schoolName]', el => el.value = "lbcc");
+  await page.$eval('input[id=searchProfessorName]', el => el.value = "Ryan Carroll");
+  await page.click('input[name=_action_search]');
+
+  await browser.close();
+})();
