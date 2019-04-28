@@ -8,11 +8,15 @@ var getRmpProfLink = function(htmlString){
 
   //loads hmtl into cheerio 
   var search = cheerio.load(htmlString); 
+
+  //gets prof name
+  var name = search("span.main").text();
  
   //finds the link and appends to base url
   var link = 'https://www.ratemyprofessors.com' + search('li.listing.PROFESSOR').find("a").attr("href");
 
-  console.log(link)
+  console.log("Name:               " + name);
+  console.log("Profilelink:        " +link);
 
   return link;
 
@@ -31,9 +35,9 @@ var getRmpProfRatings = function(htmlString){
   //finds the difficulty of professor
   var difficulty = search("div.breakdown-section.difficulty").find("div.grade").text().trim();
 
-  console.log(quality);
+  console.log("Quality Score       " + quality);
 
-  console.log(difficulty);
+  console.log("Difficulty Score:   " +difficulty);
 
 }
 
