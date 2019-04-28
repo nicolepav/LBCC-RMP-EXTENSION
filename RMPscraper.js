@@ -1,18 +1,56 @@
-const pup = require("puppeteer")
-const cheerio = require("cheerio")
+var cheerio = require('cheerio')
+var urllib = require('urllib')
 
-const puppeteer = require('puppeteer');
 
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://www.ratemyprofessors.com/');
-  
-  await page.click('a[id=findProfessorOption]')
 
-  await page.$eval('input[name=schoolName]', el => el.value = "lbcc");
-  await page.$eval('input[id=searchProfessorName]', el => el.value = "Ryan Carroll");
-  await page.click('input[name=_action_search]');
+//Takes hmtl as string, returns url to professor profile
+var getRmpProfLink = function(htmlString){
 
-  await browser.close();
-})();
+  //loads hmtl into cheerio 
+  var search = cheerio.load(htmlString); 
+ 
+  //finds the link and appends to base url
+  var link = 'https://www.ratemyprofessors.com' + search('li.listing.PROFESSOR').find("a").attr("href");
+
+  console.log(link)
+
+  return link;
+
+}
+
+
+//Takes hmtl as string, prints ratings from rmp
+var getRmpProfRatings = function(htmlString){
+
+  //loads html into cheerio
+  var search = cheerio.load(htmlString);
+
+  //finds the quality of professor
+  var quality = search("div.breakdown-container.quality").find("div.grade").text();
+
+  //finds the difficulty of professor
+  var difficulty = search("div.breakdown-section.difficulty").find("div.grade").text().trim();
+
+  console.log(quality);
+
+  console.log(difficulty);
+
+}
+
+//url going to be given from blairs stuff
+const url = 'https://www.ratemyprofessors.com/search.jsp?query=lbcc+ryan+carroll';
+
+//request the html file of the search page
+urllib.request(url, (err, rmpSeachHtml) => {
+
+    //grabs the url of the profile page
+    var profLink = getRmpProfLink(rmpSeachHtml.toString());
+
+    //request the html file of the profile page
+    urllib.request(profLink,(err,rmpProfHtml) => {
+      
+      //prints the ratings
+      getRmpProfRatings(rmpProfHtml.toString());
+
+    })
+})
