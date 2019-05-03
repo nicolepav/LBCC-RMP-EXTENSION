@@ -3,6 +3,10 @@
     "name": "[DEMO]LBCC RateMyProfessors",
     "version": "0.1",
 
+    "permissions":[
+        "tabs"
+    ],
+
     "description": "Gets information from RateMyProfessor on LBCC teachers.",
     "author": "Nicole Pavlovich, Ruben Bramasco, & Blair Cardiel",
 
@@ -29,7 +33,7 @@
             "matches": [
             "<all_urls>"
             ],
-            "js": ["displayscript.js"]
+            "js": ["bundle.js"]
         }
         ]
 }

@@ -1,49 +1,15 @@
-// example object
-const data = {
-    name: 'Professor RealGood',
-    quality: 5.0,
-    difficulty: 3.3,
-};
+// // example object
+var request = require('./node_modules/request');
 
-const data2 = {
-    name: 'Professor HeckNoWay',
-    quality: 1.0,
-    difficulty: 4.3,
-};
 
-const data3 = {
-    name: 'Professor Mediocre',
-    quality: 3.0,
-    difficulty: 3.0
-}
-
-const data4 = {
-    name: 'Professor KindaAverage',
-    quality: 3.4,
-    difficulty: 2.7
-}
-
-const data5 = {
-    name: 'Professor Likeable',
-    quality: 3.7,
-    difficulty: 0.2
-}
-
-// array of objects that is fed to the 
-const arr = [data, data2, data3, data4, data5];
-
-// create a professor block for each item in the array
-for (i = 0; i < arr.length; i++) 
-{
-
-    // create the div element (outer container for prof box)
+var doc = function(data){
     var professorbox = document.createElement('div');
-    professorbox.id = arr[i]; 
+    professorbox.id = data; 
     professorbox.className = "singleprof";
 
         // create professor name as content for the prof box
         let str = '';
-        str += arr[i].name + '\n\n'; 
+        str += data.name + '\n\n'; 
         professorbox.innerHTML = str; //put nothing here, inner HTML will be more divs?
 
     // create another div element (inner container for quality score)
@@ -51,8 +17,8 @@ for (i = 0; i < arr.length; i++)
     qBox.className = "qBox";
         
         // create quality score as content for the qBox
-        let qstr = '';
-        qstr += 'Q: ' + arr[i].quality.toFixed(1);
+        var qstr = "";
+        qstr += 'Q: ' + data.quality;
         qBox.innerHTML = qstr;
 
     // create another div element (inner containter for difficulty score)
@@ -61,7 +27,7 @@ for (i = 0; i < arr.length; i++)
 
         // create difficulty score as content for the dBox
         let dstr = '';
-        dstr += 'D: ' + arr[i].difficulty.toFixed(1);
+        dstr += 'D: ' + data.difficulty;
         dBox.innerHTML = dstr;
     
 
@@ -71,5 +37,35 @@ for (i = 0; i < arr.length; i++)
         // nest the quality box & difficulty box inside the professor box
         professorbox.append(qBox);
         professorbox.append(dBox); 
-    
-} 
+}
+
+var url = 'https://apps.lbcc.edu/schedule/scheduleDetail.cfm?term=1625&courseID=000848&semester=FALL&Descr=Second%20Calculus%20Course&strAction=&campus=&subject=MATH&catalog_nbr=70';
+
+request({
+  uri : url,
+},function(error,response,htmlString){
+
+  profList = getLbccProfList(htmlString)
+  for(var i = 0 ; i<profList.length ; i++){
+    var link = 'https://www.google.com/search?&q='+ profList[i][0] + profList[i][1] +"+RMP+"+"lbcc";
+
+    request({
+      uri: link
+    },function(error,response,htmlString){
+
+      var rmpLink =  getGoogleLinks(htmlString)
+
+      if(rmpLink.includes('http://'))
+        request({
+          uri: rmpLink
+        },function(error,response,htmlString){
+
+          getRmpProfRatings(htmlString,doc)
+
+        })
+
+    })
+
+  }
+
+})

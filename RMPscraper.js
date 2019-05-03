@@ -1,232 +1,93 @@
+var cheerio = require('./node_modules/cheerio');
 
-var JSSoup = require('jssoup').default
-var urllib = require('urllib')
+//Takes hmtl as string, returns url to professor profile
+getGoogleLinks = function(htmlString){
 
-//Rate my professor Search Url
-//Takes a url, returns another
+  //loads hmtl into cheerio 
+  var search = cheerio.load(htmlString); 
 
-var ratemyprofessorSearch = function(name,i){
-  htmlString = "https://www.ratemyprofessors.com/search.jsp?query=lbcc+" + name[0]+"+"+name[1];
-  var rmpSearch = new JSSoup(htmlString);
+  //gets prof name
+  var link = search("div#search").find('a').attr('href');
 
-  linkr = rmpSearch.findAll('a');
-  for(var i = 0; i<linkr.length;i++){
-     link = linkr[i].attrs.href;
-      if (link != undefined && link.startsWith('/ShowRatings'))
-        break;
-  }
-
-  return link = "https://www.ratemyprofessors.com"+link;
-}
-
-//Rate my professor Rating Page
-//Takes url and returns list of ratings [Quality, Would take again, Difficulty]
-
-var ratemyprofessorRating = function(htmlString,name1){
-
-  var rmpRatings = new JSSoup(htmlString);
-
-  var ratings = rmp.findAll('div', {class: 'grade'});
-
-  for(var i = 0; i < ratings.length; i++){
-   data = ratings[i].getText("|");
-  }
-
-  list = [];
-  str = ''
-  var count = 0;
-
-    for(var i = 0;i<data.length;i++){
-     if(data[i]!= ' ' && data[i]!='\n'&& list.length < 3){
-    
-      while(data[i]!=' ' && count < 3){
-        str += data[i];
-        count++
-        i++
-      }
-      count = 0;
-     list.push(str)
-      str = ''
-    }
-    
+  if(link == undefined)
+    return 0;
   
-  }
-  var obj = {
-    name: name1,
-    quality: list[0],
-    difficulty: list[2],
-};
-return obj;
+  link = link  .replace('&',' ').replace('=',' ').replace('%3','').replace('%3','').replace('F','?').replace('D','=').split(' ');
+
+  return link[1];
+
 }
 
-var getHtmlString = async function(url)
-{   
-    const promise = new Promise(resolve => {
-        urllib.request(url, (err, data) => {
-            resolve(data.toString())
-        })
-    })
-    return promise
+//Takes hmtl as string, prints ratings from rmp
+getRmpProfRatings = function(htmlString, doc){
+
+  //div.r .find(a)
+
+  //loads html into cheerio
+  var search = cheerio.load(htmlString);
+
+  //gets the quality of professor
+  var qual = search("div.breakdown-container.quality").find("div.grade").text();
+
+  //gets the difficulty of professor
+  var diff = search("div.breakdown-section.difficulty").find("div.grade").text().trim();
+
+  //gets prof name 
+  var profName = search("span.pfname").text() + ' ' + search("span.plname").text();
+
+  //prep return obj
+  var data = {
+    name: profName,
+    quality: qual,
+    difficulty: diff,
+  };
+
+  doc(data);
+  console.log(data)
+
 }
 
-var sum = getHtmlString("https://www.ratemyprofessors.com/ShowRatings.jsp?tid=2093080").then(data => {
- // console.log(data.toString());
-})
+//takes htmlString from the lbcc schedule & returns a list of professor name
+getLbccProfList = function(htmlString){
+  
+  //makes a cheerio from htmlString ;)
+  var search = cheerio.load(htmlString);
 
-// This is asynchronous... 
-// function processData(callback) {   
-//   fetchDataInAFarAwayAndMysticDatabase(function (err, data) {     
-//       if (err) {
-//          return callback(err);
-//       }     
-//       data += 1;     
-//       callback(null, data);   
-//   }); 
-// }
+  //delcare vars for loop
+  var profNameList = []; 
+  var i = 0 ;
 
-// function getHtmlString(url,callback) {
-//   urllib.request(url,function(err,data){
-//     callback(data);
-//   })
-//   return callback
-// }
+  //This loop iterate through the rows on the lbcc website
+  do{
 
-// function foo(address, fn){
-//   geocoder.geocode( { 'address': address}, function(results, status) {
-//      fn(results[0].geometry.location); 
-//   });
-// }
+    i++;
 
-// foo("address", function(location){
-//   alert(location); // this is where you get the return value
-// });
+    //append i to 'tr#row' to select a row on the lbcc website
+    var selector =('tr#row'+i); 
 
-// function urlToHtml(url, fn,str) {
-//   urllib.request(url, function(err, data,str) {
-//     fn(data,str);
-//   });
-// }
-
-// varObj = {htmlstring: ''}
-// str = []
-
-// var thingy = urlToHtml("https://www.ratemyprofessors.com/ShowRatings.jsp?tid=2093080", function(data,str) {
-//   console.log(data.toString());
-// })
-profNames = [ [ 'Han', 'J' ], [ 'Taylor', 'L' ] ];
-// pass the array to ruben
-
-// RUBEN
-
-// accept the array of names
-var ratingpageURL;
-console.log(profNames)
-// for each name 
-for (i = 0; i < profNames.length; i++){
+    //get a list of professor name [Last, Middle, First Initial]
+    var profName =search(selector).children().last().text().trim().replace(',','').split(' ');
     
-    // find their rate my prof page
-    // ratingpageURL = rmp.ratemyprofessorSearch(name[i]);
-    searchpageURL = "https://www.ratemyprofessors.com/search.jsp?query=lbcc+" + profNames[i][0]+"+"+profNames[i][1];
-    getHtmlString(searchpageURL).then(data => 
-    {
-        var searchpageHTML = data.toString(); //gets html string to use with soup
-        console.log(searchpageHTML)
-        var rmpSearch = new JSSoup(searchpageHTML); //makes soup
+    //Pushes to list if name is found, if not break
+    if(profName == '')
+      break;
 
-        linkr = rmpSearch.findAll('a'); //scraps all tags with <a>
+    profNameList.push(profName);
+  
+  }while(true);
 
-        for(var i = 0; i < linkr.length;i++)
-        {
-            link = linkr[i].attrs.href;
-            if (link != undefined && link.startsWith('/ShowRatings')) 
-                break;
-        }
+  //for debug, take out when done
+  console.log(profNameList);
 
-        ratingpageURL = "https://www.ratemyprofessors.com"+link;
-        
-        // scrape RMP page
-        getHtmlString(ratingpageURL).then(data => {
-            var rmpRatings = new JSSoup(data.toString());
+  return profNameList;
 
-            var ratings = rmpRatings.findAll('div', {class: 'grade'});
+}
 
-            for(var i = 0; i < ratings.length; i++)
-            {
-                data = ratings[i].getText("|");
-            }
-
-            list = [];
-            str = '';
-            var count = 0;
-
-            for(var i = 0;i<data.length;i++)
-            {
-                if(data[i]!= ' ' && data[i]!='\n'&& list.length < 3)
-                {
-                    while(data[i]!=' ' && count < 3)
-                    {
-                        str += data[i];
-                        count++
-                        i++
-                    }
-                    
-                    count = 0;
-                    list.push(str)
-                    str = ''
-                }
-            }
-
-            // write object with
-            var professorDetails = 
-            {
-                name,
-                quality,
-                difficulty
-            }
-            
-            // pass object to Nicole
-            // pass all scraped qualities here
-            professorDetails.name = "Prof. " + profNames[i][0],
-            professorDetails.quality = list[0];
-            professorDetails.difficulty = list[2];
-            
-                // inject object // 
-
-                // create the div element (outer container for prof box)
-                var professorbox = document.createElement('div');
-                professorbox.id = name[i][0]; 
-                professorbox.className = "singleprof";
-
-                    // create professor name as content for the prof box
-                    professorbox.innerHTML = "professorDetails.name"; 
-
-                // create another div element (inner container for quality score)
-                var qBox = document.createElement('div');
-                qBox.className = "qBox";
-                    
-                    // create quality score as content for the qBox
-                    qBox.innerHTML =  professorDetails.quality;
-
-                // create another div element (inner containter for difficulty score)
-                var dBox = document.createElement('div');
-                dBox.className = "dBox";
-
-                    // create difficulty score as content for the dBox
-                    dBox.innerHTML = professorDetails.difficulty;
-                
-                // nest the quality box & difficulty box inside the professor box
-                professorbox.append(qBox);
-                professorbox.append(dBox); 
-
-                // append the professor box to the html file
-                document.getElementById('proflist').append(professorbox);
-                console.log("injection sucessful")
-
-
-
-        })   
-            
-})  
-        
+testBed =  function(url,func){
+  request({
+    uri : url,
+  },function(error,response,htmlString){
+    func(htmlString)
+  })
 }
 
