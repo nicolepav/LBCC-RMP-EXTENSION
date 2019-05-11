@@ -3,39 +3,55 @@ var request = require('./node_modules/request');
 
 
 var doc = function(data){
-    var professorbox = document.createElement('div');
-    professorbox.id = data; 
-    professorbox.className = "singleprof";
 
-        // create professor name as content for the prof box
-        professorbox.innerHTML = data.name; //put nothing here, inner HTML will be more divs?
+  // outermost box (the one with dropshadow)
+  var professorbox = document.createElement('div');
+  professorbox.className = "singleprof";
 
-    // create another div element (inner container for quality score)
-    var qBox = document.createElement('div');
-    qBox.className = "qBox";
-        
-        // create quality score as content for the qBox
-        var qstr = "";
-        qstr += 'Q: ' + data.quality;
-        qBox.innerHTML = qstr;
 
-    // create another div element (inner containter for difficulty score)
-    var dBox = document.createElement('div');
-    dBox.className = "dBox";
+  var organizationTable = document.createElement("TABLE");
+  organizationTable.className = "tableclass";
+  var row1 = organizationTable.insertRow(0);  // [score] row
+  var row2 = organizationTable.insertRow(1);  // score row
+  var cell1 = row2.insertCell(0);             // quality cell
+  var cell2 = row2.insertCell(1);             // difficulty cell
 
-        // create difficulty score as content for the dBox
-        let dstr = '';
-        dstr += 'D: ' + data.difficulty;
-        dBox.innerHTML = dstr;
-    
 
-    // append the professor box to the html file
-    document.getElementById('proflist').append(professorbox);
+  // create box to hold the name
+  var professorNameBox =  document.createElement('div');
+  professorNameBox.className = "namebox";
+  professorNameBox.innerHTML = data.name; 
 
-        // nest the quality box & difficulty box inside the professor box
-        professorbox.append(qBox);
-        professorbox.append(dBox); 
+  // color coding
+  var classN = '';
+  if (data.quality > 3.5 ){
+    classN = "good";
+  }
+  else if (data.quality > 2.5) {
+    classN = "average";
+  }
+  else{
+    classN = "bad";
+  }
+
+  // create another div element (inner container for quality score)
+  var qBox = document.createElement('div');
+  qBox.className = classN;
+  qBox.innerHTML = 'Q: ' + data.quality;
+  cell1.append(qBox);
+
+  // create another div element (inner containter for difficulty score)
+  var dBox = document.createElement('div');
+  dBox.className = "dBox";
+  dBox.innerHTML = 'D: ' + data.difficulty;
+  cell2.append(dBox);
+  
+  // append the professor box to the html file
+  document.getElementById('proflist').append(professorbox);
+  professorbox.append(professorNameBox);
+  professorbox.append(organizationTable);
 }
+// end Nicole's section
 
 var url = 'https://apps.lbcc.edu/schedule/scheduleDetail.cfm?term=1625&courseID=000848&semester=FALL&Descr=Second%20Calculus%20Course&strAction=&campus=&subject=MATH&catalog_nbr=70';
 

@@ -103,7 +103,7 @@ testBed =  function(url,func){
 var request = require('./node_modules/request');
 
 
-// begin nicole's section
+// begin nicole's section 
 var doc = function(data){
 
     // outermost box (the one with dropshadow)
