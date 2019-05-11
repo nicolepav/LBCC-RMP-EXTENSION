@@ -103,42 +103,59 @@ testBed =  function(url,func){
 var request = require('./node_modules/request');
 
 
+// begin nicole's section
 var doc = function(data){
+
+    // outermost box (the one with dropshadow)
     var professorbox = document.createElement('div');
-    professorbox.id = data; 
     professorbox.className = "singleprof";
 
-        // create professor name as content for the prof box
-        var str = '';
-        str += data.name + '\n\n'; 
-        professorbox.innerHTML = data.name; //put nothing here, inner HTML will be more divs?
+
+    var organizationTable = document.createElement("TABLE");
+    organizationTable.className = "tableclass";
+    var row1 = organizationTable.insertRow(0);  // [score] row
+    var row2 = organizationTable.insertRow(1);  // score row
+    var cell1 = row2.insertCell(0);             // quality cell
+    var cell2 = row2.insertCell(1);             // difficulty cell
+
+
+    // create box to hold the name
+    var professorNameBox =  document.createElement('div');
+    professorNameBox.className = "namebox";
+    professorNameBox.innerHTML = data.name; 
+
+    // color coding
+    var classN = '';
+    if (data.quality > 3.5 ){
+      classN = "good";
+    }
+    else if (data.quality > 2.5) {
+      classN = "average";
+    }
+    else{
+      classN = "bad";
+    }
 
     // create another div element (inner container for quality score)
     var qBox = document.createElement('div');
-    qBox.className = "qBox";
-        
-        // create quality score as content for the qBox
-        var qstr = "";
-        qstr += 'Q: ' + data.quality;
-        qBox.innerHTML = qstr;
+    qBox.className = classN;
+    qBox.innerHTML = 'Q: ' + data.quality;
+    cell1.append(qBox);
 
     // create another div element (inner containter for difficulty score)
     var dBox = document.createElement('div');
     dBox.className = "dBox";
-
-        // create difficulty score as content for the dBox
-        var dstr = ' ';
-        dstr += 'D: ' + data.difficulty;
-        dBox.innerHTML = dstr;
+    dBox.innerHTML = 'D: ' + data.difficulty;
+    cell2.append(dBox);
     
-
     // append the professor box to the html file
     document.getElementById('proflist').append(professorbox);
-
-        // nest the quality box & difficulty box inside the professor box
-        professorbox.append(qBox);
-        professorbox.append(dBox); 
+    professorbox.append(professorNameBox);
+    professorbox.append(organizationTable);
 }
+// end Nicole's section
+
+
 
 chrome.tabs.getSelected(null,function(tab) {
   var tablink = tab.url;

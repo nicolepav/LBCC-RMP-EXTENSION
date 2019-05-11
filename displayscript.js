@@ -8,9 +8,7 @@ var doc = function(data){
     professorbox.className = "singleprof";
 
         // create professor name as content for the prof box
-        let str = '';
-        str += data.name + '\n\n'; 
-        professorbox.innerHTML = str; //put nothing here, inner HTML will be more divs?
+        professorbox.innerHTML = data.name; //put nothing here, inner HTML will be more divs?
 
     // create another div element (inner container for quality score)
     var qBox = document.createElement('div');

@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
-    "name": "[DEMO]LBCC RateMyProfessors",
-    "version": "0.1",
+    "name": "LBCC RateMyProfessor",
+    "version": "1.0",
 
     "permissions":[
         "tabs"
